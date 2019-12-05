@@ -1,0 +1,75 @@
+﻿@model FileSettingViewModel
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<form asp-action="HandleText" asp-controller="Home">
+
+    <div class="form-group row">
+        <label class="col-sm-2 col-form-label">Имя новой базы данных</label>
+        <div class="col-sm-10">
+            <input class="form-control" type="text" asp-for="Name">
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label class="col-sm-2 col-form-label">Путь к файлу</label>
+        <div class="col-sm-9">
+            <input class="form-control" type="text" asp-for="PathFile">
+        </div>
+        <div class="col-sm-1">
+            <button type=" " class="btn btn-primary">...</button>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-sm-2"> </div>
+        <div class="col-sm-10">
+            <div class="form-check">
+                <input class="form-check-input" asp-for="IsFirstString">
+                <label class="form-check-label">Первая строка содержит заголовки</label>
+            </div>
+        </div>
+    </div>
+
+    <fieldset class="form-group">
+        <div class="row">
+            <label class="col-form-label col-sm-2 pt-0">Разделитель ячеек</label>
+            <div class="col-sm-10">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" asp-for="CellSeparator.SeparatorEnum" value="0" checked>
+                    <label class="form-check-label">Знак табуляции</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" asp-for="CellSeparator.SeparatorEnum" value="1">
+                    <label class="form-check-label">Пробел</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" asp-for="CellSeparator.SeparatorEnum" value="2">
+                    <label class="form-check-label">Точка с запятой</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input customSeparatorRadioButton" type="radio" asp-for="CellSeparator.SeparatorEnum" value="3">
+                    <label class="form-check-label">Другой</label>
+                    <input class="form-control col-sm-2 customSeparatorInput" type="text" asp-for="CellSeparator.CustomSeparator" disabled>
+                </div>
+            </div>
+        </div>
+    </fieldset>
+
+    <div class="form-group row">
+        <div class="col-sm-10">
+            <button type="submit" class="btn btn-primary">Показать результат</button>
+        </div>
+    </div>
+
+</form>
+
+<script>
+    $('customSeparatorRadioButton').click(function () {
+        if ($(this).val() === '3') {
+            $('customSeparatorInput').prop('disable', false)
+        }
+    })
+</script>
