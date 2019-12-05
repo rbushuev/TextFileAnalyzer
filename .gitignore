@@ -1,0 +1,14 @@
+# IDE
+.vscode
+.vs
+
+# compiled output
+TextFileAnalyzerbin/bin
+TextFileAnalyzer/obj
+
+# misc
+TextFileAnalyzer/Properties
+
+# System Files
+.DS_Store
+Thumbs.db
