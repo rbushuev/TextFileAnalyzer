@@ -66,16 +66,9 @@
 
 </form>
 
-<table class="table table-condensed table-striped table-bordered">
-    <thead>
-        <tr>
-            <th>a</th>
-            <th>b</th>
-            <th>c</th>
-        </tr>
-    </thead>
-    <tbody>
-    </tbody>
+<table class="table">
+    <thead class="thead-dark" id="theadInfo"></thead>
+    <tbody id="tbodyInfo"></tbody>
 </table>
 
 <script>
@@ -84,47 +77,45 @@
     function startHandle() {
 
         event.preventDefault();
-        var article = new FormData(this.event.target)
+        var formData = new FormData(this.event.target)
 
         fetch(uri, {
             method: "POST",
-            body: article
+            body: formData
         })
             .then(response => response.json())
-            .then(data => console.log(data))
+            .then(data => {
+                console.log(data);
+                _displayColumn(data);
+                _displayRows(data);
+            })
             .catch(error => console.error('ошибос', error));
     }
 
-    function startHandle1() {
+    function _displayColumn(data) {
+        const thead = document.getElementById('theadInfo');
+        let columns = data.shift();
+        let tr = thead.insertRow();
 
-        console.log(JSON.stringify(json));
-
-        $.ajax({
-            url: "/api/handletext",
-            contentType: "application/json",
-            method: "POST",
-            data: JSON.stringify(json),
-            success: function (infos) {
-                console.log("success post")
-                reset();
-                tableAppends(infos);
-            }
-        })
+        columns.forEach(column => {
+            let headerNode = document.createElement("TH");
+            headerNode.innerHTML = column;
+            tr.appendChild(headerNode);
+        });
     }
 
-    function tableAppends(infos) {
-        var rows = "";
-        $.each(infos, function (index, info) {
-            rows += row(info);
-        })
-        $("table tbody").append(rows);
-    }
+    function _displayRows(data) {
+        const tBody = document.getElementById('tbodyInfo');
 
-    var row = function (user) {
-        return "<tr data-rowid='" + user.id + "'><td>" + user.id + "</td>" +
-            "<td>" + user.name + "</td> <td>" + user.age + "</td>" +
-            "<td><a class='editLink' data-id='" + user.id + "'>Изменить</a> | " +
-            "<a class='removeLink' data-id='" + user.id + "'>Удалить</a></td></tr>";
+        data.forEach(items => {
+            let tr = tBody.insertRow();
+
+            items.forEach(item => {
+                let td = tr.insertCell();
+                let textNode = document.createTextNode(item);
+                td.appendChild(textNode);
+            });
+        });
     }
 
     function reset() {
@@ -132,14 +123,5 @@
         form.reset();
         form.elements["id"].value = 0;
     }
-
-    $("#startHandle").click(function (e) {
-        //var data = $('#myForm').serializeArray();
-        //startHandle();
-        fetch(uri)
-           .then(response => response.json())
-           .then(data => console.log('DATA:' + data))
-           .catch(err => console.log('ERR:' + err));
-    })
 
 </script>
