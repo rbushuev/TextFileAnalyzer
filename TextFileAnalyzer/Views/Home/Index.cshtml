@@ -84,17 +84,17 @@
             body: formData
         })
             .then(response => response.json())
-            .then(data => {
-                console.log(data);
-                _displayColumn(data);
-                _displayRows(data);
-            })
+            .then(data => { _displayItems(data) })
             .catch(error => console.error('ошибос', error));
     }
 
-    function _displayColumn(data) {
+    function _displayItems(data) {
+        _displayColumn(data.shift());
+        _displayRows(data);
+    }
+
+    function _displayColumn(columns) {
         const thead = document.getElementById('theadInfo');
-        let columns = data.shift();
         let tr = thead.insertRow();
 
         columns.forEach(column => {
@@ -104,13 +104,13 @@
         });
     }
 
-    function _displayRows(data) {
+    function _displayRows(rows) {
         const tBody = document.getElementById('tbodyInfo');
 
-        data.forEach(items => {
+        rows.forEach(row => {
             let tr = tBody.insertRow();
 
-            items.forEach(item => {
+            row.forEach(item => {
                 let td = tr.insertCell();
                 let textNode = document.createTextNode(item);
                 td.appendChild(textNode);
