@@ -3,7 +3,7 @@
 .vs
 
 # compiled output
-TextFileAnalyzerbin/bin
+TextFileAnalyzer/bin
 TextFileAnalyzer/obj
 
 # misc
