@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TextFileAnalyzer.ViewModels;
 using TextFileAnalyzer.Extensions;
+using TextFileAnalyzer.Models;
 
 namespace TextFileAnalyzer.Controllers
 {
@@ -23,31 +24,47 @@ namespace TextFileAnalyzer.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> HandleText([FromForm]FileSettingViewModel fileSettingViewModel)
+        public async Task<IActionResult> HandleText([FromForm]FileSettingViewModel fsVM)
         {
-            var rows = new List<List<string>>();
+            var table = new Table();
 
             try
             {
-                string datasourcePath = _hostingEnvironment.ContentRootPath + "\\datasource";
-                string filePath = datasourcePath + $"\\{fileSettingViewModel.Name}.txt";
+                string filePath = GetFilePath(fsVM.Name);
 
                 using StreamReader sr = new StreamReader(filePath);
 
-                string line;
+                var line = await sr.ReadLineAsync();
+
+                var separator = fsVM.CellSeparator.GetSeparator();
+
+                var content = line.Split(separator);
+
+                if (fsVM.IsFirstString)
+                    table.AddHeaders(content);
+                else
+                    table.AddCustomHeaders(content.Length);
+
+
                 while ((line = await sr.ReadLineAsync()) != null)
                 {
-                    if (fileSettingViewModel.IsFirstString)
-                        rows.Add(line.Split(fileSettingViewModel.CellSeparator.GetSeparator()).ToList());
+                    content = line.Split(separator);
+
+                    table.AddRowContent(content);
                 }
 
             }
             catch (Exception e)
             {
-                throw new Exception(e.Message);
+                return BadRequest(e.Message);
             }
 
-            return Ok(rows);
+            return Ok(table);
+        }
+
+        private string GetFilePath(string nameFile)
+        {
+            return _hostingEnvironment.ContentRootPath + "\\datasource" + $"\\{nameFile}.txt";
         }
     }
 }

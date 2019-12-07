@@ -37,23 +37,21 @@
         <div class="row">
             <label class="col-form-label col-sm-2 pt-0">Разделитель ячеек</label>
             <div class="col-sm-10">
+
+                @foreach (SeparatorEnum item in Enum.GetValues(typeof(SeparatorEnum)))
+                {
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" asp-for="CellSeparator.SeparatorEnum" value="0" checked>
-                    <label class="form-check-label">Знак табуляции</label>
+                    <input onclick="switchCustomSeparatorInput(this)" class="form-check-input" type="radio" asp-for="CellSeparator.SeparatorEnum" value="@((int)item)">
+                    <label class="form-check-label">@(item)</label>
+                    @{
+                        if (item == SeparatorEnum.Custom)
+                        {
+                            <input id="customSeparatorInput" class="form-control col-sm-2" type="text" asp-for="CellSeparator.CustomSeparator" disabled>
+                        }
+                    }
                 </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" asp-for="CellSeparator.SeparatorEnum" value="1">
-                    <label class="form-check-label">Пробел</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" asp-for="CellSeparator.SeparatorEnum" value="2">
-                    <label class="form-check-label">Точка с запятой</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input customSeparatorRadioButton" type="radio" asp-for="CellSeparator.SeparatorEnum" value="3">
-                    <label class="form-check-label">Другой</label>
-                    <input class="form-control col-sm-2 customSeparatorInput" type="text" asp-for="CellSeparator.CustomSeparator" disabled>
-                </div>
+                }
+
             </div>
         </div>
     </fieldset>
@@ -66,14 +64,25 @@
 
 </form>
 
-<table class="table">
-    <thead class="thead-dark" id="theadInfo"></thead>
+<table id="headersTable" class="table">
+    <thead ></thead>
+    <tbody ></tbody>
+</table>
+
+<table id="mainTable" class="table table-bordered table-hover">
+    <thead id="theadInfo"></thead>
     <tbody id="tbodyInfo"></tbody>
 </table>
 
 <script>
+
     const uri = '/api/handletext';
 
+    function switchCustomSeparatorInput(radioButton) {
+        let customSeparatorInput = document.getElementById('customSeparatorInput');
+        radioButton.value === '3' ? customSeparatorInput.disabled = false : customSeparatorInput.disabled = true;
+    }
+    
     function startHandle() {
 
         event.preventDefault();
@@ -84,22 +93,33 @@
             body: formData
         })
             .then(response => response.json())
-            .then(data => { _displayItems(data) })
+            .then(data => {
+                console.log(data);
+                _displayItems(data);
+            })
             .catch(error => console.error('ошибос', error));
     }
 
     function _displayItems(data) {
-        _displayColumn(data.shift());
-        _displayRows(data);
+        _resetTable();
+        _displayHeaders(data.headers);
+        _displayRows(data.rows);
     }
 
-    function _displayColumn(columns) {
+    function _resetTable() {
+        var table = document.getElementById('mainTable');
+        while(table.rows.length > 0) {
+          table.deleteRow(0);
+        }
+    }
+
+    function _displayHeaders(headers) {
         const thead = document.getElementById('theadInfo');
         let tr = thead.insertRow();
 
-        columns.forEach(column => {
+        headers.forEach(header => {
             let headerNode = document.createElement("TH");
-            headerNode.innerHTML = column;
+            headerNode.innerHTML = header;
             tr.appendChild(headerNode);
         });
     }
@@ -110,7 +130,7 @@
         rows.forEach(row => {
             let tr = tBody.insertRow();
 
-            row.forEach(item => {
+            row.cells.forEach(item => {
                 let td = tr.insertCell();
                 let textNode = document.createTextNode(item);
                 td.appendChild(textNode);
