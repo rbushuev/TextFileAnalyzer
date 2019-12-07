@@ -19,7 +19,7 @@
             <input class="form-control" type="text" asp-for="PathFile">
         </div>
         <div class="col-sm-1">
-            <button type=" " class="btn btn-primary">...</button>
+            @{await Html.RenderPartialAsync("_LoadListFilePathButtonPartialView");}
         </div>
     </div>
 
@@ -40,16 +40,16 @@
 
                 @foreach (SeparatorEnum item in Enum.GetValues(typeof(SeparatorEnum)))
                 {
-                <div class="form-check">
-                    <input onclick="switchCustomSeparatorInput(this)" class="form-check-input" type="radio" asp-for="CellSeparator.SeparatorEnum" value="@((int)item)">
-                    <label class="form-check-label">@(item)</label>
-                    @{
-                        if (item == SeparatorEnum.Custom)
-                        {
-                            <input id="customSeparatorInput" class="form-control col-sm-2" type="text" asp-for="CellSeparator.CustomSeparator" disabled>
+                    <div class="form-check">
+                        <input onclick="switchCustomSeparatorInput(this)" class="form-check-input" type="radio" asp-for="CellSeparator.SeparatorEnum" value="@((int)item)">
+                        <label class="form-check-label">@(item)</label>
+                        @{
+                            if (item == SeparatorEnum.Custom)
+                            {
+                                <input id="customSeparatorInput" class="form-control col-sm-2" type="text" asp-for="CellSeparator.CustomSeparator" disabled>
+                            }
                         }
-                    }
-                </div>
+                    </div>
                 }
 
             </div>
@@ -64,40 +64,59 @@
 
 </form>
 
-<table id="headersTable" class="table">
-    <thead ></thead>
-    <tbody ></tbody>
-</table>
 
-<table id="mainTable" class="table table-bordered table-hover">
-    <thead id="theadInfo"></thead>
-    <tbody id="tbodyInfo"></tbody>
-</table>
+
+@{await Html.RenderPartialAsync("_HeadersTablePartialView");}
+
+@{await Html.RenderPartialAsync("_MainTablePartialView");}
+
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Редактирование записи</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div id="modal-body-editItem" class="modal-body">
+                ...
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Отменить</button>
+                <button type="button" class="btn btn-primary">Сохранить изменения</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
 
-    const uri = '/api/handletext';
+    let items = [];
 
     function switchCustomSeparatorInput(radioButton) {
         let customSeparatorInput = document.getElementById('customSeparatorInput');
         radioButton.value === '3' ? customSeparatorInput.disabled = false : customSeparatorInput.disabled = true;
     }
-    
-    function startHandle() {
+
+    function displayEditForm(index) {
+        const item = items[index];
+        
+    }
+
+    async function startHandle() {
 
         event.preventDefault();
         var formData = new FormData(this.event.target)
 
-        fetch(uri, {
-            method: "POST",
-            body: formData
-        })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data);
-                _displayItems(data);
-            })
-            .catch(error => console.error('ошибос', error));
+        try {
+            let response = await fetch('/api/handletext', { method: "POST", body: formData });
+            let data = await response.json();
+            items = [...data.rows];
+            _displayItems(data);
+        } catch (err) {
+            console.error('Ошибка обработки формы', err);
+        }
     }
 
     function _displayItems(data) {
@@ -108,8 +127,8 @@
 
     function _resetTable() {
         var table = document.getElementById('mainTable');
-        while(table.rows.length > 0) {
-          table.deleteRow(0);
+        while (table.rows.length > 0) {
+            table.deleteRow(0);
         }
     }
 
@@ -127,21 +146,27 @@
     function _displayRows(rows) {
         const tBody = document.getElementById('tbodyInfo');
 
-        rows.forEach(row => {
-            let tr = tBody.insertRow();
+        rows.forEach((element, index) => {
+            const tr = tBody.insertRow();
 
-            row.cells.forEach(item => {
+            element.cells.forEach(item => {
                 let td = tr.insertCell();
                 let textNode = document.createTextNode(item);
                 td.appendChild(textNode);
             });
-        });
-    }
 
-    function reset() {
-        var form = document.forms["userForm"];
-        form.reset();
-        form.elements["id"].value = 0;
+            let editButton = document.createElement('button');
+            editButton.className = 'btn btn-primary';
+            editButton.innerText = 'Edit';
+            editButton.dataset.toggle = "modal";
+            editButton.dataset.target = "#exampleModalCenter";
+            editButton.setAttribute('onclick', `displayEditForm(${index})`);
+
+            let tdEditButton = tr.insertCell();
+            tdEditButton.appendChild(editButton);
+        });
+
+
     }
 
 </script>

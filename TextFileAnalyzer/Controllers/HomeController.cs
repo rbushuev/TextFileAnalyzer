@@ -15,7 +15,6 @@ namespace TextFileAnalyzer.Controllers
 
         public IActionResult Index()
         {
-            //string[] allFoundFiles = Directory.GetFiles(projectRootPath, $"{fileName}.txt", SearchOption.AllDirectories);
             return View();
         }
 

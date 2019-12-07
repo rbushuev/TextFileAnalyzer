@@ -46,6 +46,7 @@ namespace TextFileAnalyzer.Controllers
                     table.AddCustomHeaders(content.Length);
 
 
+                int id = 0;
                 while ((line = await sr.ReadLineAsync()) != null)
                 {
                     content = line.Split(separator);
@@ -64,7 +65,7 @@ namespace TextFileAnalyzer.Controllers
 
         private string GetFilePath(string nameFile)
         {
-            return _hostingEnvironment.ContentRootPath + "\\datasource" + $"\\{nameFile}.txt";
+            return Path.Combine(_hostingEnvironment.ContentRootPath, @"datasource", $"{nameFile}.txt");
         }
     }
 }

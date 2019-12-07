@@ -1,0 +1,49 @@
+﻿
+<button onclick="loadListFilePath()" type="button" class="btn btn-primary" data-toggle="modal" data-target="#selectFile">...</button>
+
+<div class="modal fade" id="selectFile" tabindex="-1" role="dialog" aria-labelledby="selectFile" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Выберите файл</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div id="selectListButtonPath" class="modal-body">
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Выбрать</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    async function loadListFilePath() {
+        try {
+            let response = await fetch('/api/files');
+            let data = await response.json();
+            addPathFilesInList(data);
+        } catch (err) {
+            console.error('Ошибка загрузки списка файлов', err);
+        }
+    }
+
+    function addPathFilesInList(data) {
+        let selectListButtonPath = document.getElementById('selectListButtonPath');
+
+        data.forEach(e => {
+            let pathFileButton = document.createElement('button');
+            pathFileButton.className = 'btn btn-outline-primary btn-lg btn-block';
+            pathFileButton.innerText = e;
+            selectListButtonPath.appendChild(pathFileButton);
+        });
+    }
+
+</script>
