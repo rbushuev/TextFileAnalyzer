@@ -12,7 +12,18 @@
             </div>
 
             <div id="selectListButtonPath" class="modal-body">
-
+                <table id="modalFileListTable" class="table table-hover" style="table-layout: fixed">
+                    <thead>
+                        <tr>
+                            <td style="width: 40%">Имя файла</td>
+                            <td style="width: 20%">Путь к файлу</td>
+                            <td style="width: 10%">Расширение файла</td>
+                            <td style="width: 15%">Размер файла в Kb</td>
+                            <td style="width: 15%">Функции</td>
+                        </tr>
+                    </thead>
+                    <tbody id="modalFileListTBody"></tbody>
+                </table>
             </div>
 
             <div class="modal-footer">
@@ -25,10 +36,14 @@
 
 <script>
 
+    let files = [];
+
     async function loadListFilePath() {
         try {
-            let response = await fetch('/api/files');
+            let response = await fetch('/api/files', { method: 'POST', body: JSON.stringify({'fileExtension': 'txt'}) });
             let data = await response.json();
+            _resetModalTable();
+            files = [...data];
             addPathFilesInList(data);
         } catch (err) {
             console.error('Ошибка загрузки списка файлов', err);
@@ -36,14 +51,54 @@
     }
 
     function addPathFilesInList(data) {
-        let selectListButtonPath = document.getElementById('selectListButtonPath');
+        const tBody = document.getElementById('modalFileListTBody');
 
-        data.forEach(e => {
-            let pathFileButton = document.createElement('button');
-            pathFileButton.className = 'btn btn-outline-primary btn-lg btn-block';
-            pathFileButton.innerText = e;
-            selectListButtonPath.appendChild(pathFileButton);
+        data.forEach((items, index) => {
+            const tr = tBody.insertRow();
+            console.log(items);
+
+            for (var item in items) {
+                let td = tr.insertCell();
+                td.className = 'text-truncate';
+                let textNode = document.createTextNode(items[item]);
+                td.appendChild(textNode);
+            }
+
+            //let tdNameFile = tr.insertCell();
+            //tdNameFile.className = 'text-truncate';
+            //tdNameFile.style.width = "60%";
+            //let textNodeName = document.createTextNode(items.name);
+            //td.appendChild(textNodeName);
+
+            
+            //let tdFileSize = tr.insertCell();
+            //tdFileSize.className = 'text-truncate';
+            //tdFileSize.style.width = "10%";
+            //let textNodeFileSize = document.createTextNode(items.fileSize);
+            //td.appendChild(textNodeFileSize);
+
+            let selectButton = document.createElement('button');
+            selectButton.className = 'btn btn-primary';
+            selectButton.innerText = 'Select';
+            selectButton.dataset.dismiss = 'modal'
+            selectButton.setAttribute('onclick', `selectFile(${index})`);
+
+            let tdSelectButton = tr.insertCell();
+            tdSelectButton.appendChild(selectButton);
         });
+    }
+
+    function _resetModalTable() {
+        var table = document.getElementById('modalFileListTable');
+        while (table.rows.length > 1) {
+            table.deleteRow(1);
+        }
+    }
+
+    function selectFile(index) {
+        let inputFile = document.getElementById('PathFile');
+        let pathFile = files[index].fullPath;
+        inputFile.value = pathFile;
     }
 
 </script>

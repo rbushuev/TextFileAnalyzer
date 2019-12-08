@@ -7,16 +7,9 @@
 <form id="myForm" action="javascript:void(0);" method="POST" onsubmit="startHandle()">
 
     <div class="form-group row">
-        <label class="col-sm-2 col-form-label">Имя новой базы данных</label>
-        <div class="col-sm-10">
-            <input class="form-control" type="text" asp-for="Name">
-        </div>
-    </div>
-
-    <div class="form-group row">
         <label class="col-sm-2 col-form-label">Путь к файлу</label>
         <div class="col-sm-9">
-            <input class="form-control" type="text" asp-for="PathFile">
+            <input class="form-control" type="text" asp-for="PathFile" required>
         </div>
         <div class="col-sm-1">
             @{await Html.RenderPartialAsync("_LoadListFilePathButtonPartialView");}
@@ -27,7 +20,7 @@
         <div class="col-sm-2"> </div>
         <div class="col-sm-10">
             <div class="form-check">
-                <input class="form-check-input" asp-for="IsFirstString">
+                <input class="form-check-input" asp-for="IsFirstString" />
                 <label class="form-check-label">Первая строка содержит заголовки</label>
             </div>
         </div>
@@ -41,7 +34,7 @@
                 @foreach (SeparatorEnum item in Enum.GetValues(typeof(SeparatorEnum)))
                 {
                     <div class="form-check">
-                        <input onclick="switchCustomSeparatorInput(this)" class="form-check-input" type="radio" asp-for="CellSeparator.SeparatorEnum" value="@((int)item)">
+                        <input onclick="switchCustomSeparatorInput(this)" class="form-check-input" type="radio" asp-for="CellSeparator.SeparatorEnum" value="@((int)item)" required>
                         <label class="form-check-label">@(item)</label>
                         @{
                             if (item == SeparatorEnum.Custom)
@@ -96,7 +89,7 @@
 
     function switchCustomSeparatorInput(radioButton) {
         let customSeparatorInput = document.getElementById('customSeparatorInput');
-        radioButton.value === '3' ? customSeparatorInput.disabled = false : customSeparatorInput.disabled = true;
+        customSeparatorInput.disabled = radioButton.value !== '3'
     }
 
     function displayEditForm(index) {
@@ -165,8 +158,6 @@
             let tdEditButton = tr.insertCell();
             tdEditButton.appendChild(editButton);
         });
-
-
     }
 
 </script>

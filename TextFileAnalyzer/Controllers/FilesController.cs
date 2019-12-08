@@ -13,12 +13,28 @@ namespace TextFileAnalyzer.Controllers
     [ApiController]
     public class FilesController : ControllerBase
     {
-        [HttpGet]
-        public IActionResult Get()
+        [HttpPost]
+        public IActionResult Post(string fileExtension)
         {
-            var catalog = Path.Combine(Directory.GetCurrentDirectory(), @"datasource");
-            string[] allFoundFiles = Directory.GetFiles(catalog, $"*.txt", SearchOption.AllDirectories);
-            return Ok(allFoundFiles);
+            var result = new List<Models.File>();
+
+            string catalog = Path.Combine(Directory.GetCurrentDirectory(), @"datasource");
+
+            FileInfo[] fileInfos = new DirectoryInfo(catalog).GetFiles($".{fileExtension}");
+
+            foreach (var e in fileInfos)
+            {
+                var temp = new Models.File()
+                {
+                    Name = e.Name,
+                    FullPath = e.FullName,
+                    FileExtension = e.Extension,
+                    FileSize = Math.Round((double)e.Length / 1000, 3)
+                };
+                result.Add(temp);
+            }
+
+            return Ok(result);
         }
     }
 }

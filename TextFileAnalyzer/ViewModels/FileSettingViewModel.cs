@@ -4,8 +4,6 @@ namespace TextFileAnalyzer.ViewModels
 {
     public class FileSettingViewModel
     {
-        public string Name { get; set; }
-
         public string PathFile { get; set; }
 
         public bool IsFirstString { get; set; }

@@ -16,13 +16,6 @@ namespace TextFileAnalyzer.Controllers
     [ApiController]
     public class HandleTextController : ControllerBase
     {
-        private readonly IWebHostEnvironment _hostingEnvironment;
-
-        public HandleTextController(IWebHostEnvironment hostingEnvironment)
-        {
-            _hostingEnvironment = hostingEnvironment;
-        }
-
         [HttpPost]
         public async Task<IActionResult> HandleText([FromForm]FileSettingViewModel fsVM)
         {
@@ -30,14 +23,11 @@ namespace TextFileAnalyzer.Controllers
 
             try
             {
-                string filePath = GetFilePath(fsVM.Name);
-
-                using StreamReader sr = new StreamReader(filePath);
+                using StreamReader sr = new StreamReader(fsVM.PathFile);
 
                 var line = await sr.ReadLineAsync();
 
                 var separator = fsVM.CellSeparator.GetSeparator();
-
                 var content = line.Split(separator);
 
                 if (fsVM.IsFirstString)
@@ -45,12 +35,9 @@ namespace TextFileAnalyzer.Controllers
                 else
                     table.AddCustomHeaders(content.Length);
 
-
-                int id = 0;
                 while ((line = await sr.ReadLineAsync()) != null)
                 {
                     content = line.Split(separator);
-
                     table.AddRowContent(content);
                 }
 
@@ -61,11 +48,6 @@ namespace TextFileAnalyzer.Controllers
             }
 
             return Ok(table);
-        }
-
-        private string GetFilePath(string nameFile)
-        {
-            return Path.Combine(_hostingEnvironment.ContentRootPath, @"datasource", $"{nameFile}.txt");
         }
     }
 }
