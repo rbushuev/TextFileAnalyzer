@@ -1,0 +1,90 @@
+﻿
+<div class="modal fade" id="modalTableWindow" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 id="modalTableWindowHeaderText" class="modal-title"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div id="modalTableBody" class="modal-body"></div>
+
+            <div id="modalTableFooter" class="modal-footer"></div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+
+     async function saveHeaders() {
+
+        let request = {
+            fileSetting: data.fileSetting,
+            oldHeaders: data.table.headers,
+            newHeaders: _getNewRow()
+        };
+
+        try {
+            let response = await fetch('/api/tables/editheaders', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(request)
+            });
+            data = await response.json();
+            _displayTables(data.table.headers, data.table.rows);
+        } catch (err) {
+            console.error('Ошибка в обновлении названии колонок', err);
+        }
+    }
+
+    async function addItem() {
+
+        let request = {
+            fileSetting: data.fileSetting,
+            row: _getNewRow()
+        };
+
+        try {
+            let response = await fetch('/api/tables/addItem', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(request)
+            });
+            data = await response.json();
+            _displayTables(data.table.headers, data.table.rows);
+        } catch (err) {
+            console.error('Ошибка в добавлении объекта', err);
+        }
+    }
+
+    async function saveEditableItem(index) {
+
+        let request = {
+            fileSetting: data.fileSetting,
+            oldRow: data.table.rows[index].cells,
+            newRow: _getNewRow()
+        };
+
+        try {
+            let response = await fetch('/api/tables/editItem', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(request)
+            });
+            data = await response.json();
+            _displayTables(data.table.headers, data.table.rows);
+        } catch (err) {
+            console.error('Ошибка изменения значении ', err);
+        }
+    }
+
+    function _getNewRow() {
+        let allInputEditable = [...document.getElementsByClassName("newRow")];
+        return allInputEditable.map(input => input.value);
+    }
+
+</script>

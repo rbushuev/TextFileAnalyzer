@@ -3,82 +3,18 @@
     <tbody id="mainTableTBody"></tbody>
 </table>
 
-<div class="modal fade" id="modalTableWindow" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-
-            <div class="modal-header">
-                <h5 id="modalTableWindowHeaderText" class="modal-title"></h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-
-            <div id="modalTableBody" class="modal-body">
-
-            </div>
-
-            <div id="modalTableFooter" class="modal-footer">
-            </div>
-
-        </div>
-    </div>
-</div>
-
 <script>
-    let tempEditableItem = [];
 
-    async function displayModal() {
-
-    }
-
-    async function displayEditModalForm(index) {
-        tempEditableItem = data.table.rows[index].cells;
-
-        document.getElementById('modalTableWindowHeaderText').innerHTML = 'Редактирование';
-
-        let modalEditBody = document.getElementById('modalTableBody');
-        modalEditBody.innerHTML = '';
-
-        tempEditableItem.forEach(e => {
-            let divFormGroup = document.createElement("div");
-            divFormGroup.className = 'form-group';
-
-            modalEditBody.appendChild(divFormGroup);
-
-            let inputEditProperty = document.createElement("input");
-            inputEditProperty.className = 'form-control newRow';
-            inputEditProperty.value = e;
-
-            divFormGroup.appendChild(inputEditProperty);
-        });
-
-        document.getElementById('modalTableFooter').innerHTML = '';
-
-        let modalSaveEditableItemButton = document.createElement('button');
-        modalSaveEditableItemButton.className = 'btn btn-primary';
-        modalSaveEditableItemButton.innerText = 'Сохранить';
-        modalSaveEditableItemButton.dataset.dismiss = 'modal';
-        modalSaveEditableItemButton.setAttribute('onclick', 'modalSaveEditableItem()');
-
-        let modalEditFooter = document.getElementById('modalTableFooter');
-        modalEditFooter.appendChild(modalSaveEditableItemButton);
-    }
-    
-    async function displayAddRowModalForm() {
-
-        tempHeadersModalLabel = data.table.headers;
+    async function openAddRowModalForm() {
+        _clearModalForm();
 
         document.getElementById('modalTableWindowHeaderText').innerHTML = 'Добавление нового элемента';
 
-        let modalEditBody = document.getElementById('modalTableBody');
-        modalEditBody.innerHTML = '';
-
-        tempHeadersModalLabel.forEach(e => {
+        data.table.headers.forEach(e => {
             let divFormGroup = document.createElement("div");
             divFormGroup.className = 'form-group';
 
-            modalEditBody.appendChild(divFormGroup);
+            document.getElementById('modalTableBody').appendChild(divFormGroup);
 
             let labelProperty = document.createElement("label");
             labelProperty.innerHTML = e
@@ -90,62 +26,42 @@
             divFormGroup.appendChild(inputProperty);
         });
 
-        document.getElementById('modalTableFooter').innerHTML = '';
-
         let modalSaveEditableItemButton = document.createElement('button');
         modalSaveEditableItemButton.className = 'btn btn-primary';
         modalSaveEditableItemButton.innerText = 'Добавить';
         modalSaveEditableItemButton.dataset.dismiss = 'modal';
-        modalSaveEditableItemButton.setAttribute('onclick', 'modalAddRowItem()');
+        modalSaveEditableItemButton.setAttribute('onclick', 'addItem()');
 
         let modalEditFooter = document.getElementById('modalTableFooter');
         modalEditFooter.appendChild(modalSaveEditableItemButton);
     }
 
-    async function modalAddRowItem() {
-        var allInputEditable = [...document.getElementsByClassName("newRow")];
+    async function openEditModalForm(index) {
+        _clearModalForm();
 
-        let addRow = allInputEditable.map(input => input.value);
+        document.getElementById('modalTableWindowHeaderText').innerHTML = 'Редактирование';
 
-        let request = {
-            fileSetting: data.fileSetting,
-            row: addRow
-        };
+        data.table.rows[index].cells.forEach(e => {
+            let divFormGroup = document.createElement("div");
+            divFormGroup.className = 'form-group';
 
-        try {
-            let response = await fetch('/api/addrow', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(request)
-            });
-            data = await response.json();
-            _displayTable(data.table.headers, data.table.rows);
-        } catch (err) {
-            console.error('Ошибка в добавлении объекта', err);
-        }
+            document.getElementById('modalTableBody').appendChild(divFormGroup);
+
+            let inputEditProperty = document.createElement("input");
+            inputEditProperty.className = 'form-control newRow';
+            inputEditProperty.value = e;
+
+            divFormGroup.appendChild(inputEditProperty);
+        });
+
+        let modalSaveEditableItemButton = document.createElement('button');
+        modalSaveEditableItemButton.className = 'btn btn-primary';
+        modalSaveEditableItemButton.innerText = 'Сохранить';
+        modalSaveEditableItemButton.dataset.dismiss = 'modal';
+        modalSaveEditableItemButton.setAttribute('onclick', `saveEditableItem(${index})`);
+
+        let modalEditFooter = document.getElementById('modalTableFooter');
+        modalEditFooter.appendChild(modalSaveEditableItemButton);
     }
 
-    async function modalSaveEditableItem() {
-        var allInputEditable = [...document.getElementsByClassName("newRow")];
-
-        let newRow = allInputEditable.map(input => input.value);
-
-        let request = {
-            fileSetting: data.fileSetting,
-            oldRow: tempEditableItem,
-            newRow: newRow
-        };
-
-        try {
-            let response = await fetch('/api/editfile', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(request)
-            });
-            data = await response.json();
-            _displayTable(data.table.headers, data.table.rows);
-        } catch (err) {
-            console.error('Ошибка изменения значении ', err);
-        }
-    }
 </script>

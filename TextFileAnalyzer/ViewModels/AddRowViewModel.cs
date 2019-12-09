@@ -2,7 +2,7 @@
 
 namespace TextFileAnalyzer.ViewModels
 {
-    public class AddRowViewModel
+    public class AddItemViewModel
     {
         public FileSettings FileSetting { get; set; }
 

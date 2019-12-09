@@ -4,63 +4,33 @@
 </table>
 
 <script>
-    let tempEditableHeaders = [];
 
-    async function displayEditHeadersForm() {
-
-        tempEditableHeaders = data.table.headers;
+    async function openEditHeadersModalForm() {
+        _clearModalForm();
 
         document.getElementById('modalTableWindowHeaderText').innerHTML = 'Изменение наименования колонок';
 
-        let modalEditHeadersWindowBody = document.getElementById('modalTableBody');
-        modalEditHeadersWindowBody.innerHTML = '';
-
-        tempEditableHeaders.forEach(e => {
+        data.table.headers.forEach(e => {
             let divFormGroup = document.createElement("div");
             divFormGroup.className = 'form-group';
 
-            modalEditHeadersWindowBody.appendChild(divFormGroup);
+            document.getElementById('modalTableBody').appendChild(divFormGroup);
 
             let inputProperty = document.createElement("input");
-            inputProperty.className = 'form-control headers ';
+            inputProperty.className = 'form-control newRow';
             inputProperty.value = e;
 
             divFormGroup.appendChild(inputProperty);
         });
 
-        document.getElementById('modalTableFooter').innerHTML = '';
-
         let modalSaveEditableItemButton = document.createElement('button');
         modalSaveEditableItemButton.className = 'btn btn-primary';
         modalSaveEditableItemButton.innerText = 'Изменить';
         modalSaveEditableItemButton.dataset.dismiss = 'modal';
-        modalSaveEditableItemButton.setAttribute('onclick', 'modalEditHeaders()');
+        modalSaveEditableItemButton.setAttribute('onclick', 'saveHeaders()');
 
         let modalEditFooter = document.getElementById('modalTableFooter');
         modalEditFooter.appendChild(modalSaveEditableItemButton);
     }
-
-    async function modalEditHeaders() {
-        var allInputEditable = [...document.getElementsByClassName("headers")];
-
-        let newHeaders = allInputEditable.map(input => input.value);
-
-        let request = {
-            fileSetting: data.fileSetting,
-            oldHeaders: tempEditableHeaders,
-            newHeaders: newHeaders
-        };
-
-        try {
-            let response = await fetch('/api/editheaders', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(request)
-            });
-            data = await response.json();
-            _displayTable(data.table.headers, data.table.rows);
-        } catch (err) {
-            console.error('Ошибка в добавлении объекта', err);
-        }
-    }
+    
 </script>

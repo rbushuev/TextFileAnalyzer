@@ -1,15 +1,15 @@
 ﻿@model FileSettings
 
 @{
-    ViewData["Title"] = "Тестовое задание";
+    ViewData["Title"] = "Главная страница";
 }
 
-<form name="mainForm" action="javascript:void(0);" onsubmit="startHandle()">
+<form name="mainForm" action="javascript:void(0);" onsubmit="fetchTable()">
 
     <div class="form-group row">
         <label class="col-sm-2 col-form-label">Путь к файлу</label>
         <div class="col-sm-9">
-            <input class="form-control" type="text" asp-for="PathFile" required>
+            <input class="form-control-plaintext form-control" type="text" asp-for="PathFile" placeholder="Выберите файл..." readonly required>
         </div>
         <div class="col-sm-1">
             @{await Html.RenderPartialAsync("_LoadListFilePathButtonPartialView");}
@@ -19,9 +19,9 @@
     <div class="form-group row">
         <div class="col-sm-2"> </div>
         <div class="col-sm-10">
-            <div class="form-check">
-                <input class="form-check-input" asp-for="IsHeadersFirst" />
-                <label class="form-check-label">Первая строка содержит заголовки</label>
+            <div class="custom-control custom-checkbox">
+                <input class="custom-control-input" asp-for="IsHeadersFirst" />
+                <label class="custom-control-label" asp-for="IsHeadersFirst">Первая строка содержит заголовки</label>
             </div>
         </div>
     </div>
@@ -30,26 +30,31 @@
         <div class="row">
             <label class="col-form-label col-sm-2 pt-0">Разделитель ячеек</label>
             <div class="col-sm-10">
-
                 @foreach (SeparatorEnum item in Enum.GetValues(typeof(SeparatorEnum)))
                 {
-                    <div class="form-check">
-                        <input onclick="switchCustomSeparatorInput(this)" class="form-check-input" type="radio" asp-for="Separator.SeparatorEnum" value="@((int)item)" required>
-                        <label class="form-check-label">@(item)</label>
-                        @if (item == SeparatorEnum.Custom)
-                        {
-                            <input id="customSeparatorInput" class="form-control col-sm-2" type="text" asp-for="Separator.CustomSeparator" disabled>
-                        }
-                    </div>
+                <div class="custom-control custom-checkbox">
+                    @if (item == SeparatorEnum.Tab)
+                    {
+                        <input onclick="switchCustomSeparatorInput(this)" id="customRadio@((int)item)" type="radio" class="custom-control-input" asp-for="Separator.SeparatorEnum" value="@((int)item)" required checked>
+                    }
+                    else
+                    {
+                        <input onclick="switchCustomSeparatorInput(this)" id="customRadio@((int)item)" type="radio" class="custom-control-input" asp-for="Separator.SeparatorEnum" value="@((int)item)" required>
+                    }
+                    <label class="custom-control-label" for="customRadio@((int)item)">@(item)</label>
+                    @if (item == SeparatorEnum.Custom)
+                    {
+                        <input id="customSeparatorInput" class="form-control col-sm-2" type="hidden" asp-for="Separator.CustomSeparator">
+                    }
+                </div>
                 }
-
             </div>
         </div>
     </fieldset>
 
     <div class="form-group row">
         <div class="col-sm-10">
-            <button type="submit" class="btn btn-primary">Прочитать данные</button>
+            <button type="submit" class="btn btn-warning">Прочитать данные</button>
         </div>
     </div>
 
@@ -57,117 +62,14 @@
 
 <hr />
 
-@{await Html.RenderPartialAsync("_HeadersTablePartialView");}
-
-<hr />
-
-@{await Html.RenderPartialAsync("_MainTablePartialView");}
+@{await Html.RenderPartialAsync("_TablesPartialView");}
 
 <script>
 
-    let data;
-
     function switchCustomSeparatorInput(radioButton) {
         let customSeparatorInput = document.getElementById('customSeparatorInput');
-        customSeparatorInput.disabled = radioButton.value !== '3'
-    }
-
-    async function startHandle() {
-
-        var formData = new FormData(document.forms.mainForm);
-
-        try {
-            let response = await fetch('/api/handletext', { method: "POST", body: formData });
-            data = await response.json();
-            _displayTable(data.table.headers, data.table.rows);
-        } catch (err) {
-            console.error('Ошибка обработки формы', err);
-        }
-    }
-
-    function _displayTable(headers, rows) {
-        _resetTables();
-        _displayHeadersTable(headers);
-        _displayHeaders(headers);
-        _displayRows(rows);
-    }
-
-    function _resetTables() {
-        var tables = [document.getElementById('mainTable'), document.getElementById('headersTable')];
-        tables.forEach(table => {
-            while (table.rows.length > 0) {
-                table.deleteRow(0);
-            }
-        });
-    }
-
-    function _displayHeaders(headers) {
-        const thead = document.getElementById('mainTableTHead');
-        let tr = thead.insertRow();
-
-        headers.forEach(header => {
-            let headerNode = document.createElement("TH");
-            headerNode.innerHTML = header;
-            tr.appendChild(headerNode);
-        });
-
-        let funcHeaderText = document.createElement("TH")
-        funcHeaderText.innerHTML = 'Функции';
-        tr.appendChild(funcHeaderText);
-    }
-
-    function _displayHeadersTable(headers) {
-        const thead = document.getElementById('headersTableTHead');
-        let tr = thead.insertRow();
-
-        headers.forEach(header => {
-            let headerNode = document.createElement("TH");
-            headerNode.innerHTML = header;
-            tr.appendChild(headerNode);
-        });
-
-        let editHeadersButton = document.createElement('button');
-        editHeadersButton.className = 'btn btn-primary';
-        editHeadersButton.innerText = 'Редактировать';
-        editHeadersButton.dataset.toggle = 'modal';
-        editHeadersButton.dataset.target = '#modalTableWindow';
-        editHeadersButton.setAttribute('onclick', `displayEditHeadersForm()`);
-
-        tr.insertCell().appendChild(editHeadersButton);
-    }
-
-    function _displayRows(rows) {
-        const tBody = document.getElementById('mainTableTBody');
-
-        rows.forEach((element, index) => {
-            const tr = tBody.insertRow();
-
-            element.cells.forEach(item => {
-                let td = tr.insertCell();
-                let textNode = document.createTextNode(item);
-                td.appendChild(textNode);
-            });
-
-            let editButton = document.createElement('button');
-            editButton.className = 'btn btn-primary';
-            editButton.innerText = 'Редактировать';
-            editButton.dataset.toggle = 'modal';
-            editButton.dataset.target = '#modalTableWindow';
-            editButton.setAttribute('onclick', `displayEditModalForm(${index})`);
-
-            tr.insertCell().appendChild(editButton);
-        });
-
-        const tr = tBody.insertRow();
-
-        let addRowButton = document.createElement('button');
-        addRowButton.className = 'btn btn-outline-primary';
-        addRowButton.innerText = 'Добавить новый объект';
-        addRowButton.dataset.toggle = 'modal';
-        addRowButton.dataset.target = '#modalTableWindow';
-        addRowButton.setAttribute('onclick', `displayAddRowModalForm()`);
-
-        tr.insertCell().appendChild(addRowButton);
+        let activeCustomInput = radioButton.value === '3'
+        customSeparatorInput.setAttribute('type', activeCustomInput ? 'visible' : 'hidden');
     }
 
 </script>

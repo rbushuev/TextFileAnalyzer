@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace TextFileAnalyzer.Models
 {
-    public class File
+    public class FileProperty
     {
         public string Name { get; set; }
 

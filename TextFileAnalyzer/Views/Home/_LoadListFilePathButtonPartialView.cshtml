@@ -1,5 +1,4 @@
-﻿
-<button onclick="loadListFilePath()" type="button" class="btn btn-primary" data-toggle="modal" data-target="#selectFile">...</button>
+﻿<button onclick="loadListFilePath()" type="button" class="btn btn-primary" data-toggle="modal" data-target="#selectFile">...</button>
 
 <div class="modal fade" id="selectFile" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
@@ -36,9 +35,9 @@
 
     async function loadListFilePath() {
         try {
-            let response = await fetch('/api/files', { method: 'POST', body: JSON.stringify({'fileExtension': 'txt'}) });
+            let response = await fetch('/api/files');
             let data = await response.json();
-            _resetModalTable();
+            _resetListFileModalTable();
             files = [...data];
             addPathFilesInList(data);
         } catch (err) {
@@ -69,7 +68,7 @@
         });
     }
 
-    function _resetModalTable() {
+    function _resetListFileModalTable() {
         var table = document.getElementById('modalFileListTable');
         while (table.rows.length > 1) {
             table.deleteRow(1);

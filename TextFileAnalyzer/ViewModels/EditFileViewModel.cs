@@ -4,7 +4,7 @@ using TextFileAnalyzer.Models;
 
 namespace TextFileAnalyzer.ViewModels
 {
-    public class EditFileViewModel
+    public class EditItemViewModel
     {
         public FileSettings FileSetting { get; set; }
 

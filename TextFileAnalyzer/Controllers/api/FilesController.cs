@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using TextFileAnalyzer.Models;
 
 namespace TextFileAnalyzer.Controllers
 {
@@ -13,27 +10,24 @@ namespace TextFileAnalyzer.Controllers
     [ApiController]
     public class FilesController : ControllerBase
     {
-        [HttpPost]
-        public IActionResult Post(string fileExtension)
+        [HttpGet]
+        public IActionResult Get()
         {
-            var result = new List<Models.File>();
-
+            var response = new List<FileProperty>();
             string catalog = Path.Combine(Directory.GetCurrentDirectory(), @"datasource");
-
-            FileInfo[] fileInfos = new DirectoryInfo(catalog).GetFiles($".{fileExtension}");
+            FileInfo[] fileInfos = new DirectoryInfo(catalog).GetFiles($"*.txt");
 
             foreach (var e in fileInfos)
             {
-                var temp = new Models.File()
+                var temp = new FileProperty()
                 {
                     Name = Path.GetFileNameWithoutExtension(e.Name),
                     FullPath = e.FullName,
                     FileSize = Math.Round((double)e.Length / 1000, 3)
                 };
-                result.Add(temp);
+                response.Add(temp);
             }
-
-            return Ok(result);
+            return Ok(response);
         }
     }
 }
