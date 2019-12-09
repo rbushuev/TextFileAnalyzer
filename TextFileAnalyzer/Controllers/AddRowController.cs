@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -12,31 +11,29 @@ using TextFileAnalyzer.ViewModels;
 namespace TextFileAnalyzer.Controllers
 {
     [Route("api/[controller]")]
-    [Produces("application/json")]
     [ApiController]
-    public class EditFileController : ControllerBase
+    public class AddRowController : ControllerBase
     {
         private readonly ITableReaderService _tableReaderService;
         private readonly ITableWriterService _tableWriterService;
 
-        public EditFileController(ITableReaderService tableReaderService, ITableWriterService tableWriterService)
+        public AddRowController(ITableReaderService tableReaderService, ITableWriterService tableWriterService)
         {
             _tableReaderService = tableReaderService;
             _tableWriterService = tableWriterService;
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody]EditFileViewModel request)
+        public async Task<IActionResult> Post([FromBody]AddRowViewModel request)
         {
             var separator = request.FileSetting.Separator.GetSeparator();
-            var searchString = string.Join(separator, request.OldRow);
-            var replaceString = string.Join(separator, request.NewRow);
+            var pushString = string.Join(separator, request.Row);
 
             var result = new ResponseTableViewModel(request.FileSetting);
 
             try
             {
-                await _tableWriterService.ReplaceString(request.FileSetting.PathFile, searchString, replaceString);
+                await _tableWriterService.PushString(request.FileSetting.PathFile, pushString);
                 result.Table = await _tableReaderService.Read(request.FileSetting.PathFile, separator, request.FileSetting.IsHeadersFirst);
             }
             catch (Exception e)

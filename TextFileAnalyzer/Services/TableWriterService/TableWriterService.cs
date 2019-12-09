@@ -8,31 +8,22 @@ namespace TextFileAnalyzer.Services
 {
     public class TableWriterService : ITableWriterService
     {
-        private bool _success;
-
-        public async Task<bool> ReplaceString(string pathFile, string searchString, string replaceString)
+        public async Task PushString(string pathFile, string str)
         {
-            try
-            {
-                using StreamReader reader = new StreamReader(pathFile);
-                string content = await reader.ReadToEndAsync();
-                reader.Close();
+            await File.AppendAllTextAsync(pathFile, Environment.NewLine + str);
+        }
 
-                content = content.Replace(searchString, replaceString);
+        public async Task ReplaceString(string pathFile, string searchString, string replaceString)
+        {
+            using StreamReader reader = new StreamReader(pathFile);
+            string content = await reader.ReadToEndAsync();
+            reader.Close();
 
-                using StreamWriter writer = new StreamWriter(pathFile);
-                await writer.WriteAsync(content);
-                writer.Close();
+            content = content.Replace(searchString, replaceString);
 
-                _success = true;
-            }
-            catch
-            {
-                _success = false;
-                return _success;
-            }
-
-            return _success;
+            using StreamWriter writer = new StreamWriter(pathFile);
+            await writer.WriteAsync(content);
+            writer.Close();
         }
     }
 }
