@@ -8,6 +8,12 @@ namespace TextFileAnalyzer.Services
 {
     public class TableWriterService : ITableWriterService
     {
+        public async Task AddHeaders(string pathFile, string headers)
+        {
+            var content = await File.ReadAllTextAsync(pathFile);
+            File.WriteAllText(pathFile, headers + Environment.NewLine + content);
+        }
+
         public async Task PushString(string pathFile, string str)
         {
             await File.AppendAllTextAsync(pathFile, Environment.NewLine + str);

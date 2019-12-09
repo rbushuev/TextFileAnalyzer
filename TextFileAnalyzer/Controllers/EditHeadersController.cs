@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -13,29 +12,37 @@ namespace TextFileAnalyzer.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class EditFileController : ControllerBase
+    public class EditHeadersController : ControllerBase
     {
         private readonly ITableReaderService _tableReaderService;
         private readonly ITableWriterService _tableWriterService;
 
-        public EditFileController(ITableReaderService tableReaderService, ITableWriterService tableWriterService)
+        public EditHeadersController(ITableReaderService tableReaderService, ITableWriterService tableWriterService)
         {
             _tableReaderService = tableReaderService;
             _tableWriterService = tableWriterService;
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody]EditFileViewModel request)
+        public async Task<IActionResult> Post([FromBody]EditHeadersViewModel request)
         {
             var separator = request.FileSetting.Separator.GetSeparator();
-            var searchString = string.Join(separator, request.OldRow);
-            var replaceString = string.Join(separator, request.NewRow);
+            var oldHeaders = string.Join(separator, request.OldHeaders);
+            var newHeaders = string.Join(separator, request.NewHeaders);
 
             var result = new ResponseTableViewModel(request.FileSetting);
 
             try
             {
-                await _tableWriterService.ReplaceString(request.FileSetting.PathFile, searchString, replaceString);
+                if (request.FileSetting.IsHeadersFirst)
+                {
+                    await _tableWriterService.ReplaceString(request.FileSetting.PathFile, oldHeaders, newHeaders);
+                }
+                else
+                {
+                    await _tableWriterService.AddHeaders(request.FileSetting.PathFile, newHeaders);
+                }
+
                 result.Table = await _tableReaderService.Read(request.FileSetting.PathFile, separator, request.FileSetting.IsHeadersFirst);
             }
             catch (Exception e)

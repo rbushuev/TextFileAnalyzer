@@ -55,7 +55,11 @@
 
 </form>
 
+<hr />
+
 @{await Html.RenderPartialAsync("_HeadersTablePartialView");}
+
+<hr />
 
 @{await Html.RenderPartialAsync("_MainTablePartialView");}
 
@@ -82,16 +86,19 @@
     }
 
     function _displayTable(headers, rows) {
-        _resetTable();
+        _resetTables();
+        _displayHeadersTable(headers);
         _displayHeaders(headers);
         _displayRows(rows);
     }
 
-    function _resetTable() {
-        var table = document.getElementById('mainTable');
-        while (table.rows.length > 0) {
-            table.deleteRow(0);
-        }
+    function _resetTables() {
+        var tables = [document.getElementById('mainTable'), document.getElementById('headersTable')];
+        tables.forEach(table => {
+            while (table.rows.length > 0) {
+                table.deleteRow(0);
+            }
+        });
     }
 
     function _displayHeaders(headers) {
@@ -107,6 +114,26 @@
         let funcHeaderText = document.createElement("TH")
         funcHeaderText.innerHTML = 'Функции';
         tr.appendChild(funcHeaderText);
+    }
+
+    function _displayHeadersTable(headers) {
+        const thead = document.getElementById('headersTableTHead');
+        let tr = thead.insertRow();
+
+        headers.forEach(header => {
+            let headerNode = document.createElement("TH");
+            headerNode.innerHTML = header;
+            tr.appendChild(headerNode);
+        });
+
+        let editHeadersButton = document.createElement('button');
+        editHeadersButton.className = 'btn btn-primary';
+        editHeadersButton.innerText = 'Редактировать';
+        editHeadersButton.dataset.toggle = 'modal';
+        editHeadersButton.dataset.target = '#modalTableWindow';
+        editHeadersButton.setAttribute('onclick', `displayEditHeadersForm()`);
+
+        tr.insertCell().appendChild(editHeadersButton);
     }
 
     function _displayRows(rows) {
