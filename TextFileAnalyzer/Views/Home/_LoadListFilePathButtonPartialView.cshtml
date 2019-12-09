@@ -1,22 +1,23 @@
 ﻿
 <button onclick="loadListFilePath()" type="button" class="btn btn-primary" data-toggle="modal" data-target="#selectFile">...</button>
 
-<div class="modal fade" id="selectFile" tabindex="-1" role="dialog" aria-labelledby="selectFile" aria-hidden="true">
+<div class="modal fade" id="selectFile" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
         <div class="modal-content">
+
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLongTitle">Выберите файл</h5>
+                <h5 class="modal-title">Выберите файл</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
 
             <div id="selectListButtonPath" class="modal-body">
-                <table id="modalFileListTable" class="table table-hover" style="table-layout: fixed">
+                <table id="modalFileListTable" class="table table-hover table-bordered " style="table-layout: fixed">
                     <thead>
                         <tr>
-                            <td style="width: 40%">Имя файла</td>
-                            <td style="width: 20%">Путь к файлу</td>
+                            <td style="width: 35%">Имя файла</td>
+                            <td style="width: 25%">Путь к файлу</td>
                             <td style="width: 10%">Расширение файла</td>
                             <td style="width: 15%">Размер файла в Kb</td>
                             <td style="width: 15%">Функции</td>
@@ -26,10 +27,6 @@
                 </table>
             </div>
 
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Выбрать</button>
-            </div>
         </div>
     </div>
 </div>
@@ -55,7 +52,6 @@
 
         data.forEach((items, index) => {
             const tr = tBody.insertRow();
-            console.log(items);
 
             for (var item in items) {
                 let td = tr.insertCell();
@@ -64,22 +60,9 @@
                 td.appendChild(textNode);
             }
 
-            //let tdNameFile = tr.insertCell();
-            //tdNameFile.className = 'text-truncate';
-            //tdNameFile.style.width = "60%";
-            //let textNodeName = document.createTextNode(items.name);
-            //td.appendChild(textNodeName);
-
-            
-            //let tdFileSize = tr.insertCell();
-            //tdFileSize.className = 'text-truncate';
-            //tdFileSize.style.width = "10%";
-            //let textNodeFileSize = document.createTextNode(items.fileSize);
-            //td.appendChild(textNodeFileSize);
-
             let selectButton = document.createElement('button');
             selectButton.className = 'btn btn-primary';
-            selectButton.innerText = 'Select';
+            selectButton.innerText = 'Выбрать';
             selectButton.dataset.dismiss = 'modal'
             selectButton.setAttribute('onclick', `selectFile(${index})`);
 

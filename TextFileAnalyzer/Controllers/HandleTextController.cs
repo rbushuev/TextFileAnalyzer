@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using TextFileAnalyzer.ViewModels;
 using TextFileAnalyzer.Extensions;
 using TextFileAnalyzer.Models;
+using TextFileAnalyzer.Services;
 
 namespace TextFileAnalyzer.Controllers
 {
@@ -16,38 +17,30 @@ namespace TextFileAnalyzer.Controllers
     [ApiController]
     public class HandleTextController : ControllerBase
     {
-        [HttpPost]
-        public async Task<IActionResult> HandleText([FromForm]FileSettingViewModel fsVM)
+        private readonly ITableReaderService _tableReaderService;
+
+        public HandleTextController(ITableReaderService tableReaderService)
         {
-            var table = new Table();
+            _tableReaderService = tableReaderService;
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Post([FromForm]FileSettingViewModel request)
+        {
+            var result = new ResponseTableViewModel(request);
+
+            var separator = request.Separator.GetSeparator();
 
             try
             {
-                using StreamReader sr = new StreamReader(fsVM.PathFile);
-
-                var line = await sr.ReadLineAsync();
-
-                var separator = fsVM.CellSeparator.GetSeparator();
-                var content = line.Split(separator);
-
-                if (fsVM.IsFirstString)
-                    table.AddHeaders(content);
-                else
-                    table.AddCustomHeaders(content.Length);
-
-                while ((line = await sr.ReadLineAsync()) != null)
-                {
-                    content = line.Split(separator);
-                    table.AddRowContent(content);
-                }
-
+                result.Table = await _tableReaderService.Read(request.PathFile, separator, request.IsHeadersFirst);
             }
             catch (Exception e)
             {
                 return BadRequest(e.Message);
             }
 
-            return Ok(table);
+            return Ok(result);
         }
     }
 }

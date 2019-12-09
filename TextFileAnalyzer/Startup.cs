@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
+using TextFileAnalyzer.Services;
 
 namespace TextFileAnalyzer
 {
@@ -28,9 +29,11 @@ namespace TextFileAnalyzer
         {
             services.AddDirectoryBrowser();
             services.AddControllersWithViews();
-            //Add CORS support
-            services.AddCors(o => o.AddPolicy("AllowAll", builder 
-                => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().AllowCredentials()));
+
+            services.AddCors(x => x.AddPolicy("AllowAll", y => y.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin()));
+
+            services.AddTransient<ITableReaderService, TableReaderService>();
+            services.AddTransient<ITableWriterService, TableWriterService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -48,6 +51,8 @@ namespace TextFileAnalyzer
             }
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+
+            app.UseCors("AllowAll");
 
             app.UseFileServer(new FileServerOptions()
             {

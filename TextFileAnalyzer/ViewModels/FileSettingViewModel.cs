@@ -6,8 +6,8 @@ namespace TextFileAnalyzer.ViewModels
     {
         public string PathFile { get; set; }
 
-        public bool IsFirstString { get; set; }
+        public bool IsHeadersFirst { get; set; }
 
-        public Separator CellSeparator { get; set; } = new Separator();
+        public Separator Separator { get; set; } = new Separator();
     }
 }
