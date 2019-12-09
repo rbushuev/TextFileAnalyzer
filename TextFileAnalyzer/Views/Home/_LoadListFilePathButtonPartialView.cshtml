@@ -16,9 +16,8 @@
                 <table id="modalFileListTable" class="table table-hover table-bordered " style="table-layout: fixed">
                     <thead>
                         <tr>
-                            <td style="width: 35%">Имя файла</td>
-                            <td style="width: 25%">Путь к файлу</td>
-                            <td style="width: 10%">Расширение файла</td>
+                            <td style="width: 30%">Имя файла</td>
+                            <td style="width: 40%">Путь к файлу</td>
                             <td style="width: 15%">Размер файла в Kb</td>
                             <td style="width: 15%">Функции</td>
                         </tr>
@@ -55,7 +54,6 @@
 
             for (var item in items) {
                 let td = tr.insertCell();
-                td.className = 'text-truncate';
                 let textNode = document.createTextNode(items[item]);
                 td.appendChild(textNode);
             }

@@ -11,8 +11,6 @@ namespace TextFileAnalyzer.Models
 
         public string FullPath { get; set; }
 
-        public string FileExtension { get; set; }
-
         public double FileSize { get; set; }
     }
 }

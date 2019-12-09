@@ -6,7 +6,7 @@ namespace TextFileAnalyzer.ViewModels
 {
     public class EditFileViewModel
     {
-        public FileSettingViewModel FileSetting { get; set; }
+        public FileSettings FileSetting { get; set; }
 
         public IEnumerable<string> OldRow { get; set; }
 

@@ -6,6 +6,6 @@ namespace TextFileAnalyzer.Services
     {
         Task PushString(string pathFile, string str);
         Task ReplaceString(string pathFile, string searchString, string replaceString);
-        Task AddHeaders(string pathFile, string headers);
+        Task<FileSettings> AddHeaders(FileSettings fileSettings, string headers);
     }
 }

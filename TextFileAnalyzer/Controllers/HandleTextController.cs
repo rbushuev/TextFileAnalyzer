@@ -25,7 +25,7 @@ namespace TextFileAnalyzer.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromForm]FileSettingViewModel request)
+        public async Task<IActionResult> Post([FromForm]FileSettings request)
         {
             var result = new ResponseTableViewModel(request);
 

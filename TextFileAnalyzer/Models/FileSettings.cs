@@ -1,8 +1,8 @@
 ﻿using TextFileAnalyzer.Models;
 
-namespace TextFileAnalyzer.ViewModels
+namespace TextFileAnalyzer
 {
-    public class FileSettingViewModel
+    public class FileSettings
     {
         public string PathFile { get; set; }
 

@@ -8,11 +8,11 @@ namespace TextFileAnalyzer.ViewModels
 {
     public class ResponseTableViewModel
     {
-        public FileSettingViewModel FileSetting { get; set; }
+        public FileSettings FileSetting { get; set; }
 
         public Table Table { get; set; } = new Table();
 
-        public ResponseTableViewModel(FileSettingViewModel fileSetting)
+        public ResponseTableViewModel(FileSettings fileSetting)
         {
             FileSetting = fileSetting;
         }

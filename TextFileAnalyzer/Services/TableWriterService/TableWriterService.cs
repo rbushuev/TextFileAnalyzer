@@ -8,10 +8,12 @@ namespace TextFileAnalyzer.Services
 {
     public class TableWriterService : ITableWriterService
     {
-        public async Task AddHeaders(string pathFile, string headers)
+        public async Task<FileSettings> AddHeaders(FileSettings fileSettings, string headers)
         {
-            var content = await File.ReadAllTextAsync(pathFile);
-            File.WriteAllText(pathFile, headers + Environment.NewLine + content);
+            var content = await File.ReadAllTextAsync(fileSettings.PathFile);
+            await File.WriteAllTextAsync(fileSettings.PathFile, headers + Environment.NewLine + content);
+            fileSettings.IsHeadersFirst = true;
+            return fileSettings;
         }
 
         public async Task PushString(string pathFile, string str)
@@ -21,15 +23,9 @@ namespace TextFileAnalyzer.Services
 
         public async Task ReplaceString(string pathFile, string searchString, string replaceString)
         {
-            using StreamReader reader = new StreamReader(pathFile);
-            string content = await reader.ReadToEndAsync();
-            reader.Close();
+            string content = await File.ReadAllTextAsync(pathFile);
 
-            content = content.Replace(searchString, replaceString);
-
-            using StreamWriter writer = new StreamWriter(pathFile);
-            await writer.WriteAsync(content);
-            writer.Close();
+            await File.WriteAllTextAsync(pathFile, content.Replace(searchString, replaceString));
         }
     }
 }

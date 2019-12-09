@@ -7,7 +7,7 @@ namespace TextFileAnalyzer.ViewModels
 {
     public class EditHeadersViewModel
     {
-        public FileSettingViewModel FileSetting { get; set; }
+        public FileSettings FileSetting { get; set; }
 
         public IEnumerable<string> OldHeaders { get; set; }
 

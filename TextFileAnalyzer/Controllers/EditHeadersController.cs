@@ -31,7 +31,6 @@ namespace TextFileAnalyzer.Controllers
             var newHeaders = string.Join(separator, request.NewHeaders);
 
             var result = new ResponseTableViewModel(request.FileSetting);
-
             try
             {
                 if (request.FileSetting.IsHeadersFirst)
@@ -40,7 +39,7 @@ namespace TextFileAnalyzer.Controllers
                 }
                 else
                 {
-                    await _tableWriterService.AddHeaders(request.FileSetting.PathFile, newHeaders);
+                    result.FileSetting = await _tableWriterService.AddHeaders(request.FileSetting, newHeaders);
                 }
 
                 result.Table = await _tableReaderService.Read(request.FileSetting.PathFile, separator, request.FileSetting.IsHeadersFirst);

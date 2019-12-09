@@ -26,9 +26,8 @@ namespace TextFileAnalyzer.Controllers
             {
                 var temp = new Models.File()
                 {
-                    Name = e.Name,
+                    Name = Path.GetFileNameWithoutExtension(e.Name),
                     FullPath = e.FullName,
-                    FileExtension = e.Extension,
                     FileSize = Math.Round((double)e.Length / 1000, 3)
                 };
                 result.Add(temp);
