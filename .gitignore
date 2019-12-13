@@ -12,3 +12,27 @@ TextFileAnalyzer/Properties
 # System Files
 .DS_Store
 Thumbs.db
+
+# react ignore
+
+# dependencies
+TextFileAnalyzer/clientapp/node_modules
+TextFileAnalyzer/clientapp/.pnp
+TextFileAnalyzer/clientapp/.pnp.js
+
+# testing
+TextFileAnalyzer/clientapp/coverage
+
+# production
+TextFileAnalyzer/clientapp/build
+
+# misc
+TextFileAnalyzer/clientapp/.DS_Store
+TextFileAnalyzer/clientapp/.env.local
+TextFileAnalyzer/clientapp/.env.development.local
+TextFileAnalyzer/clientapp/.env.test.local
+TextFileAnalyzer/clientapp/.env.production.local
+
+TextFileAnalyzer/clientapp/npm-debug.log*
+TextFileAnalyzer/clientapp/yarn-debug.log*
+TextFileAnalyzer/clientapp/yarn-error.log*
