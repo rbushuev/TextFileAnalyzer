@@ -82,9 +82,9 @@ namespace TextFileAnalyzer
 
             app.UseSpa(spa =>
 			{
-				spa.Options.SourcePath = "сlientApp";
+                spa.Options.SourcePath = Path.Join(env.ContentRootPath, "clientapp");
 
-				if (env.IsDevelopment())
+                if (env.IsDevelopment())
 				{
 					spa.UseReactDevelopmentServer(npmScript: "start");
 				}
